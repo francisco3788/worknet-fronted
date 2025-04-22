@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // ✅ Agregamos Link
 import api from '../services/api';
 
 function InicioSesion() {
@@ -10,7 +10,7 @@ function InicioSesion() {
 
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // ✅ Para redirigir
+  const navigate = useNavigate();
 
   const handleChange = e => {
     setFormData({
@@ -80,15 +80,21 @@ function InicioSesion() {
               required
             />
           </div>
+
+          {/* ✅ Enlace funcional con redirección */}
           <div className="text-right text-sm mb-4">
-            <a href="#" className="text-emerald-500 hover:underline">¿Olvidaste tu contraseña?</a>
+            <Link to="/recuperar" className="text-emerald-500 hover:underline">
+              ¿Olvidaste tu contraseña?
+            </Link>
           </div>
+
           <button
             type="submit"
             className="w-full bg-emerald-500 text-white py-2 rounded hover:bg-emerald-600 transition"
           >
             INICIAR SESIÓN
           </button>
+
           {mensaje && <p className="text-green-600 mt-4 text-center">{mensaje}</p>}
           {error && <p className="text-red-600 mt-4 text-center">{error}</p>}
         </form>

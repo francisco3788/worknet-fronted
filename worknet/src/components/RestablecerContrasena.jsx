@@ -1,72 +1,78 @@
-import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+// Nuevo archivo limpio y funcional para CONFIRMAR el cambio de contraseña (después del enlace)
+
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 export default function RestablecerContrasena() {
-  const { uid, token } = useParams();
+  const { uidb64, token } = useParams();
   const navigate = useNavigate();
 
-  const [password, setPassword] = useState('');
-  const [confirmar, setConfirmar] = useState('');
-  const [mensaje, setMensaje] = useState('');
-  const [error, setError] = useState('');
+  const [password, setPassword] = useState("");
+  const [confirmarPassword, setConfirmarPassword] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setMensaje('');
-    setError('');
+    setMensaje("");
+    setError("");
 
-    if (password !== confirmar) {
-      setError('Las contraseñas no coinciden.');
+    if (password !== confirmarPassword) {
+      setError("Las contraseñas no coinciden.");
       return;
     }
 
     try {
-      const response = await axios.post(`http://localhost:8000/api/usuarios/restablecer/`, {
-        uid,
-        token,
-        nueva_contrasena: password
-      });
-
-      setMensaje('✅ Contraseña actualizada correctamente. Redirigiendo...');
-      setTimeout(() => navigate('/'), 3000);
+      const response = await api.post(
+        `/usuarios/restablecer/confirmar/${uidb64}/${token}/`,
+        { nueva_password: password }
+      );
+      setMensaje(response.data.mensaje);
+      setTimeout(() => navigate("/"), 3000); // Redirige al login en 3 segundos
     } catch (err) {
-      setError('❌ El enlace no es válido o ha expirado.');
+      const errorData = err.response?.data;
+      if (errorData?.error) {
+        setError(errorData.error);
+      } else {
+        setError("Ocurrió un error. Intenta nuevamente.");
+      }
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <h2 className="text-2xl font-bold text-emerald-600 mb-4">Restablecer Contraseña</h2>
-      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
-        <div>
-          <label className="block font-medium mb-1">Nueva Contraseña</label>
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+      <h2 className="text-2xl font-bold mb-4 text-emerald-600">Restablecer Contraseña</h2>
+
+      <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-6 rounded shadow">
+        <div className="mb-4">
+          <label className="block mb-1 font-medium">Nueva Contraseña</label>
           <input
             type="password"
+            className="w-full border p-2 rounded"
             value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
-        <div>
-          <label className="block font-medium mb-1">Confirmar Contraseña</label>
+
+        <div className="mb-4">
+          <label className="block mb-1 font-medium">Confirmar Contraseña</label>
           <input
             type="password"
-            value={confirmar}
-            onChange={e => setConfirmar(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border p-2 rounded"
+            value={confirmarPassword}
+            onChange={(e) => setConfirmarPassword(e.target.value)}
             required
           />
         </div>
-        <button
-          type="submit"
-          className="w-full bg-emerald-500 text-white py-2 rounded hover:bg-emerald-600 transition"
-        >
+
+        <button type="submit" className="w-full bg-emerald-500 text-white py-2 rounded hover:bg-emerald-600">
           Restablecer
         </button>
-        {mensaje && <p className="text-green-600 text-center">{mensaje}</p>}
-        {error && <p className="text-red-600 text-center">{error}</p>}
+
+        {mensaje && <p className="text-green-600 mt-4 text-center">{mensaje}</p>}
+        {error && <p className="text-red-600 mt-4 text-center">{error}</p>}
       </form>
     </div>
   );

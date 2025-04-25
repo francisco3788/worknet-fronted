@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // ✅ Agregamos Link
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 
 function InicioSesion() {
@@ -26,7 +26,19 @@ function InicioSesion() {
 
     try {
       const response = await api.post('usuarios/login/', formData);
+
+      // ✅ Guardar token y tipo de usuario en localStorage
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('tipo_usuario', response.data.tipo_usuario);
+
       setMensaje(response.data.mensaje + ' (' + response.data.tipo_usuario + ')');
+
+      // ✅ Redirigir automáticamente al perfil correspondiente
+      if (response.data.tipo_usuario === 'empresa') {
+        navigate('/perfil-empresa');
+      } else if (response.data.tipo_usuario === 'candidato') {
+        navigate('/perfil-candidato');
+      }
     } catch (err) {
       if (err.response && err.response.data) {
         setError(err.response.data.non_field_errors?.[0] || 'Error al iniciar sesión');
@@ -81,7 +93,7 @@ function InicioSesion() {
             />
           </div>
 
-          {/* ✅ Enlace funcional con redirección */}
+          {/* Enlace funcional con redirección */}
           <div className="text-right text-sm mb-4">
             <Link to="/recuperar" className="text-emerald-500 hover:underline">
               ¿Olvidaste tu contraseña?

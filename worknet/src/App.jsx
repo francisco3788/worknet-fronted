@@ -7,6 +7,8 @@ import RegistroEmpresa from './components/RegistroEmpresa';
 import ElegirTipoCuenta from './components/ElegirTipoCuenta';
 import RestablecerContrasena from './components/RestablecerContrasena'; // desde enlace
 import EnviarRecuperacionCorreo from './components/EnviarRecuperacionCorreo'; // ingresar correo
+import PerfilEmpresa from "./components/PerfilEmpresa";
+import PerfilCandidato from './components/PerfilCandidato';
 
 function App() {
   return (
@@ -16,6 +18,9 @@ function App() {
         <Route path="/seleccionar-cuenta" element={<ElegirTipoCuenta />} />
         <Route path="/registro-candidato" element={<RegistroCandidato />} />
         <Route path="/registro-empresa" element={<RegistroEmpresa />} />
+        <Route path="/perfil-empresa" element={<PerfilEmpresa />} />
+        <Route path="/perfil-candidato" element={<PerfilCandidato />} />
+
         
         {/* ✅ Paso 1: Ingresar correo */}
         <Route path="/recuperar" element={<EnviarRecuperacionCorreo />} />
